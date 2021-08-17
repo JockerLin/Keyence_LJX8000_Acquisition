@@ -42,10 +42,10 @@ int main() {
 	// CHANGE THIS BLOCK TO MATCH YOUR SENSOR SETTINGS (FROM HERE)
 	//-----------------------------------------------------------------
 	int deviceId = 0;					// 设备数 Set "0" if you use only 1 head.
-	int xImageSize = 3200;				// Number of X points.
-	int yImageSize = 1000;				// Number of Y lines.
-	float y_pitch_um = 20.0;			// Data pitch of Y data. (e.g. your encoder setting)
-	int	timeout_ms = 5000;				// Timeout value for the acquiring image (in milisecond).
+	int xImageSize = 3200;				// 图像宽 Number of X points.
+	int yImageSize = 1000;				// 图像高 Number of Y lines.
+	float y_pitch_um = 20.0;			// Y数据间距 Data pitch of Y data. (e.g. your encoder setting)
+	int	timeout_ms = 5000;				// 采集timeout设定 Timeout value for the acquiring image (in milisecond).
 	int use_external_batchStart = 0;	// Set "1" if you controll the batch start timing externally. (e.g. terminal input)
 	string outputFilePath1 = "sample_height.csv";
 	string outputFilePath2 = "sample_height.tif";
@@ -62,7 +62,7 @@ int main() {
 	// CHANGE THIS BLOCK TO MATCH YOUR SENSOR SETTINGS (TO HERE)
 	//-----------------------------------------------------------------
 
-	// Allocate user memory
+	// 申请内存 Allocate user memory
 	heightImage = (unsigned short*)malloc(sizeof(unsigned short) * xImageSize * yImageSize);
 	luminanceImage = (unsigned short*)malloc(sizeof(unsigned short) * xImageSize * yImageSize);
 	if (heightImage == NULL || luminanceImage == NULL) {
@@ -72,7 +72,7 @@ int main() {
 		return (1);
 	}
 
-	// Prepare setting parameter
+	// 采集参数设定 Prepare setting parameter
 	LJXA_ACQ_SETPARAM setParam;
 	{
 		setParam.y_linenum = yImageSize;
@@ -82,10 +82,12 @@ int main() {
 	}
 
 	// Variable to store information of the acquired image
+	// 用于存储获取的图像信息的变量
 	LJXA_ACQ_GETPARAM getParam;
 
 	//------------------------------------------------------------
 	// Step1. Open device
+	// 打开设备
 	//------------------------------------------------------------
 	int errCode = LJXA_ACQ_OpenDevice(deviceId, &EthernetConfig, HighSpeedPortNo);
 
@@ -101,21 +103,22 @@ int main() {
 
 	//------------------------------------------------------------
 	// Step2. Acquire image
+	// 采集图像
 	//------------------------------------------------------------
 	// There are two methods you can use.
 	//
-	// (1) Synchronous method
+	// (1) Synchronous method 同步方法
 	//	"Acquire" function does not return unless the acquisition is completed or a timeout occurs. 
 	//	This is an easy method because you only call one function.
 	//  But it blocks execution of other code during acquisition.
 	//
-	// (2) Asynchronous methods
+	// (2) Asynchronous methods 异步方法
 	// "Start" the acquisition first, and "Acquire" later.
 	// "Acquire" function returns even if the acquisition is not completed.
 	// It doesn't block other code.
 
 
-#if 1	// Synchronous acquisition
+#if 1	// Synchronous acquisition 同步采集方法
 	errCode = LJXA_ACQ_Acquire(deviceId, heightImage, luminanceImage, &setParam, &getParam);
 
 	if (errCode != LJX8IF_RC_OK) {
@@ -127,7 +130,7 @@ int main() {
 		WaitExit();
 		return (1);
 	}
-#else	// Asynchronous acquisition
+#else	// Asynchronous acquisition 异步采集方法
 	// Start asynchronous acquire
 	errCode = LJXA_ACQ_StartAsync(deviceId, &setParam);
 	if (errCode != LJX8IF_RC_OK) {
@@ -181,7 +184,8 @@ int main() {
 	printf(" Z pitch in micrometer : %-.1f\n", getParam.z_pitch_um);
 	printf("----------------------------------------\n");
 
-	//Output csv and tiff
+	// Output csv and tiff
+	// 保存数据
 	try
 	{
 		long rc = CsvConverter::Save(outputFilePath1, heightImage, yImageSize, xImageSize, getParam.z_pitch_um);

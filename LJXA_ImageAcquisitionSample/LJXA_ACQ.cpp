@@ -45,6 +45,15 @@ extern "C"
 		printf("[@(LJXA_ACQ_CloseDevice) Close device]\n");
 	}
 
+	/**
+	同步采集方法
+	@param	lDeviceId		设备ID
+	@param	heightImage		高度图指针
+	@param	luminanceImage	亮度图指针
+	@param	setParam		设置采集参数
+	@param	getParam		采集完参数
+	@return	Return code
+	*/
 	LJXA_ACQ_API int LJXA_ACQ_Acquire(int lDeviceId, unsigned short *heightImage, unsigned short *luminanceImage, LJXA_ACQ_SETPARAM *setParam, LJXA_ACQ_GETPARAM *getParam) {
 		int errCode;
 
@@ -64,12 +73,13 @@ extern "C"
 			return LJX8IF_RC_ERR_NOMEMORY;
 		}
 
-		//Initialize
+		// Initialize
 		// 高速通讯预处理 注册采集回调=>myCallbackFunc
+		// yDataNum 调用回调的次数？
 		errCode = LJX8IF_InitializeHighSpeedDataCommunicationSimpleArray(lDeviceId, &_ethernetConfig[lDeviceId], _highSpeedPortNo[lDeviceId], &myCallbackFunc, yDataNum, lDeviceId);
 		printf("[@(LJXA_ACQ_Acquire) Initialize HighSpeed](0x%x)\n", errCode);
 
-		//PreStart
+		// PreStart
 		LJX8IF_HIGH_SPEED_PRE_START_REQ startReq;
 		startReq.bySendPosition = 2;
 		LJX8IF_PROFILE_INFO profileInfo;
@@ -78,7 +88,7 @@ extern "C"
 		errCode = LJX8IF_PreStartHighSpeedDataCommunication(lDeviceId, &startReq, &profileInfo);
 		printf("[@(LJXA_ACQ_Acquire) PreStart](0x%x)\n", errCode);
 
-		//高度数据
+		// todo 获取simpleArray转换因子 ？？
 		errCode = LJX8IF_GetZUnitSimpleArray(lDeviceId, &zUnit);
 		if (errCode != 0 || zUnit == 0)
 		{
@@ -106,12 +116,14 @@ extern "C"
 		if (use_external_batchStart > 0) {
 		}
 		else {
+			// 开始批处理
 			errCode = LJX8IF_StartMeasure(lDeviceId);
 			printf("[@(LJXA_ACQ_Acquire) Measure Start(Batch Start)](0x%x)\n", errCode);
 		}
 
 		// Acquire. Polling to confirm complete.
 		// Or wait until a timeout occurs.
+		// 后台采集，采集完进回调函数改标志位
 		printf(" [@(LJXA_ACQ_Acquire) acquring image...]\n");
 		DWORD start = timeGetTime();
 		while (true)
@@ -143,7 +155,7 @@ extern "C"
 		}
 		printf(" [@(LJXA_ACQ_Acquire) done]\n");
 
-		//Stop HighSpeed
+		// 采集完毕，停止高速通讯 Stop HighSpeed
 		errCode = LJX8IF_StopHighSpeedDataCommunication(lDeviceId);
 		printf("[@(LJXA_ACQ_Acquire) Stop HighSpeed](0x%x)\n", errCode);
 
@@ -154,6 +166,7 @@ extern "C"
 		_getParam[lDeviceId].luminance_enabled = profileInfo.byLuminanceOutput;
 		_getParam[lDeviceId].x_pointnum = profileInfo.wProfileDataCount;
 		_getParam[lDeviceId].y_linenum_acquired = _lastImageSizeHeight[lDeviceId];
+		// todo 两个数据为什么/100
 		_getParam[lDeviceId].x_pitch_um = profileInfo.lXPitch / 100.0f;
 		_getParam[lDeviceId].y_pitch_um = setParam->y_pitch_um;
 		_getParam[lDeviceId].z_pitch_um = zUnit / 100.0f;
@@ -162,6 +175,7 @@ extern "C"
 
 		//---------------------------------------------------------------------
 		//  Copy internal buffer to user buffer
+		// 拷贝内部数据
 		//---------------------------------------------------------------------
 		int xDataNum = _getParam[lDeviceId].x_pointnum;
 
@@ -185,6 +199,12 @@ extern "C"
 		return LJX8IF_RC_OK;
 	}
 
+	/**
+	异步采集开始
+	@param	lDeviceId		设备ID
+	@param	setParam		设置采集参数
+	@return	Return code
+	*/
 	LJXA_ACQ_API int LJXA_ACQ_StartAsync(int lDeviceId, LJXA_ACQ_SETPARAM *setParam) {
 		int errCode;
 		unsigned short zUnit = 0;

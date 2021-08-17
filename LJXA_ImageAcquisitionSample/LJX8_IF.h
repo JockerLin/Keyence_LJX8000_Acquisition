@@ -177,14 +177,14 @@ typedef void(_cdecl *LJX8IF_CALLBACK)(BYTE* pBuffer, DWORD dwSize, DWORD dwCount
 
 /**
 Callback function interface for high-speed data communication
-@param	pProfileHeaderArray		A pointer to the buffer that stores the header data array.
-@param	pHeightProfileArray		A pointer to the buffer that stores the profile data array.
-@param	pLuminanceProfileArray		A pointer to the buffer that stores the luminance profile data array.
-@param	dwLuminanceEnable		The value indicating whether luminance data output is enable or not.
-@param	dwProfileDataCount		The data count of one profile.
-@param	dwCount		The number of profile or header data stored in buffer.
-@param	dwNotify	Notification of an interruption in high-speed communication or a break in batch measurements.
-@param	dwUser		User information
+@param	pProfileHeaderArray		文件数据指针 A pointer to the buffer that stores the header data array.
+@param	pHeightProfileArray		高度数据指针 A pointer to the buffer that stores the profile data array.
+@param	pLuminanceProfileArray	亮度文件数组 A pointer to the buffer that stores the luminance profile data array.
+@param	dwLuminanceEnable		绘制亮度使能 The value indicating whether luminance data output is enable or not.
+@param	dwProfileDataCount		文件数量	The data count of one profile.
+@param	dwCount					存储在缓冲区内的配置文件或标题数据的数量。The number of profile or header data stored in buffer.
+@param	dwNotify				通知高速通信的中断或批量测量的中断。 Notification of an interruption in high-speed communication or a break in batch measurements.
+@param	dwUser					用户信息 User information
 */
 typedef void(_cdecl *LJX8IF_CALLBACK_SIMPLE_ARRAY)(LJX8IF_PROFILE_HEADER* pProfileHeaderArray, WORD* pHeightProfileArray, WORD* pLuminanceProfileArray, DWORD dwLuminanceEnable, DWORD dwProfileDataCount, DWORD dwCount, DWORD dwNotify, DWORD dwUser);
 
