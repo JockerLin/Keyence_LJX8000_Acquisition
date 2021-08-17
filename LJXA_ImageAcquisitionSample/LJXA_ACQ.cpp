@@ -74,10 +74,11 @@ extern "C"
 		startReq.bySendPosition = 2;
 		LJX8IF_PROFILE_INFO profileInfo;
 
+		// 准备高速通讯
 		errCode = LJX8IF_PreStartHighSpeedDataCommunication(lDeviceId, &startReq, &profileInfo);
 		printf("[@(LJXA_ACQ_Acquire) PreStart](0x%x)\n", errCode);
 
-		//zUnit 
+		//高度数据
 		errCode = LJX8IF_GetZUnitSimpleArray(lDeviceId, &zUnit);
 		if (errCode != 0 || zUnit == 0)
 		{

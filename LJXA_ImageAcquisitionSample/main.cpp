@@ -41,7 +41,7 @@ int main() {
 	//-----------------------------------------------------------------
 	// CHANGE THIS BLOCK TO MATCH YOUR SENSOR SETTINGS (FROM HERE)
 	//-----------------------------------------------------------------
-	int deviceId = 0;					// Set "0" if you use only 1 head.
+	int deviceId = 0;					// Éè±¸Êý Set "0" if you use only 1 head.
 	int xImageSize = 3200;				// Number of X points.
 	int yImageSize = 1000;				// Number of Y lines.
 	float y_pitch_um = 20.0;			// Data pitch of Y data. (e.g. your encoder setting)
