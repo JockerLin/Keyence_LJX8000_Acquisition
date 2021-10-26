@@ -213,6 +213,7 @@ extern "C"
 	LJX8_IF_API LJX8IF_VERSION_INFO WINAPI LJX8IF_GetVersion(void);
 
 	/**
+	打开网络通信
 	Ethernet communication connection
 	@param	lDeviceId		The communication device to communicate with.
 	@param	pEthernetConfig	Ethernet communication settings
@@ -221,6 +222,7 @@ extern "C"
 	LJX8_IF_API LONG WINAPI LJX8IF_EthernetOpen(LONG lDeviceId, LJX8IF_ETHERNET_CONFIG* pEthernetConfig);
 	
 	/**
+	关闭通讯
 	Disconnect communication path
 	@param	lDeviceId	The communication device to communicate with.
 	@return	Return code
